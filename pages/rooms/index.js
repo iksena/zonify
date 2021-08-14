@@ -1,20 +1,14 @@
-import { Row, Col, Card } from 'antd';
+import {
+  Row,
+  Col,
+  List,
+} from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 import { getTokens } from '../../lib/auth';
 import fetcher from '../../lib/fetcher';
-
-const PlaylistItem = ({
-  name,
-  id,
-  tracks,
-  collaborative,
-}) => (
-  <Card title={name} bordered={false}>
-    {`${id}\n${tracks.total}\n${collaborative}`}
-  </Card>
-);
+import PlaylistItem from '../../components/playlist-item';
 
 const Rooms = () => {
   const router = useRouter();
@@ -23,7 +17,7 @@ const Rooms = () => {
   useEffect(() => {
     const { isExpired, accessToken } = getTokens(window);
     if (isExpired) {
-      router.push('/login');
+      router.push('/');
     }
 
     const fetchPlaylist = async () => {
@@ -37,7 +31,26 @@ const Rooms = () => {
   return (
     <Row>
       <Col span={24}>
-        {playlists.map((item) => <PlaylistItem key={item.id} {...item} />)}
+        <List
+          grid={{
+            gutter: 16,
+            xs: 1,
+            sm: 2,
+            md: 4,
+            lg: 4,
+            xl: 6,
+            xxl: 3,
+          }}
+          split
+          dataSource={playlists}
+          renderItem={(item) => (
+            <PlaylistItem
+              {...item}
+              key={item.id}
+              onPress={() => router.push(`/rooms/${item.id}`)}
+            />
+          )}
+        />
       </Col>
     </Row>
   );

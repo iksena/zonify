@@ -20,3 +20,4 @@ rules:
     - 2
     - ignoreDestructuring: true
   react/jsx-props-no-spreading: off
+  '@next/next/no-img-element': warn
