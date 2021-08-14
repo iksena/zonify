@@ -2,9 +2,7 @@ import initiateSpotify from '../../lib/spotify';
 
 export default async function handler(req, res) {
   const { code } = req.query;
-  const spotify = initiateSpotify({
-    redirectUri: 'http://localhost:3000/login',
-  });
+  const spotify = initiateSpotify();
 
   if (!code) {
     const spotifyAuthUrl = spotify.createAuthorizeURL([
