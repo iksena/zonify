@@ -4,45 +4,49 @@ import { useEffect } from 'react';
 import { add } from 'date-fns';
 
 import fetcher from '../lib/fetcher';
+import { getTokens, setTokens } from '../lib/auth';
 
 const { Link } = Typography;
 
-const Login = (props) => {
+const Login = ({
+  accessToken,
+  refreshToken,
+  expiresIn,
+  spotifyAuthUrl,
+}) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (props.accessToken) {
-        window.localStorage.setItem('accessToken', props.accessToken);
-        window.localStorage.setItem('refreshToken', props.refreshToken);
-        window.localStorage.setItem('expiresIn', props.expiresIn);
-      }
-
-      const savedAccessToken = window.localStorage.getItem('accessToken');
-      if (!savedAccessToken || savedAccessToken !== 'undefined') {
-        router.push('/rooms');
-      }
+    if (accessToken && refreshToken && expiresIn) {
+      setTokens(window, { accessToken, refreshToken, expiresIn });
     }
-  }, [props.accessToken, props.refreshToken, props.expiresIn]);
 
-  return <Link href={props.spotifyAuthUrl}>Login with Spotify</Link>;
+    const { isExist, isExpired } = getTokens(window);
+    if (isExist && !isExpired) {
+      router.push('/rooms');
+    }
+  }, [accessToken, refreshToken, expiresIn]);
+
+  return <Link href={spotifyAuthUrl}>Login with Spotify</Link>;
 };
 
 export async function getServerSideProps(context) {
   const { code } = context.query;
   const url = `http://localhost:3000/api/login?code=${code || ''}`;
   const {
-    access_token: accessToken,
-    refresh_token: refreshToken,
-    expires_in: expireSeconds,
+    access_token: accessToken = null,
+    refresh_token: refreshToken = null,
+    expires_in: expireSeconds = null,
+    spotifyAuthUrl = null,
   } = await fetcher(url);
-  const expiresIn = add(new Date(), { seconds: expireSeconds });
+  const expiresIn = add(new Date(), { seconds: expireSeconds }).toISOString();
 
   return {
     props: {
       accessToken,
       refreshToken,
       expiresIn,
+      spotifyAuthUrl,
     },
   };
 }

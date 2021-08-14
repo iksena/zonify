@@ -3,7 +3,7 @@ import initiateSpotify from '../../lib/spotify';
 export default async function handler(req, res) {
   const { code } = req.query;
   const spotify = initiateSpotify({
-    redirectUri: 'http://192.168.100.39:3000/login',
+    redirectUri: 'http://localhost:3000/login',
   });
 
   if (!code) {
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ spotifyAuthUrl });
   }
 
-  const { body } = await spotify.authorizationCodeGrant(code);
+  const response = await spotify.authorizationCodeGrant(code);
 
-  return res.status(200).json(body);
+  return res.status(200).json(response.body);
 }
