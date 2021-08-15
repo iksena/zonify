@@ -3,9 +3,11 @@ import {
   Col,
   List,
 } from 'antd';
+import { isPast } from 'date-fns';
 
 import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
+import constants from '../../constants';
 
 const Rooms = ({ tracks }) => (
   <Row>
@@ -31,7 +33,7 @@ const Rooms = ({ tracks }) => (
 
 export const getServerSideProps = withSession(async ({ req, query }) => {
   const user = req.session.get('user');
-  if (!user) {
+  if (!user || isPast(new Date(user?.expiresIn))) {
     return {
       redirect: {
         destination: '/',
@@ -40,7 +42,7 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
     };
   }
 
-  const response = await fetcher(`http://localhost:3000/api/playlists/${query.id}?accessToken=${user.accessToken || ''}`);
+  const response = await fetcher(`${constants.BASE_URL}/api/playlists/${query.id}?accessToken=${user.accessToken || ''}`);
 
   return {
     props: {

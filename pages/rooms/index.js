@@ -3,11 +3,13 @@ import {
   Col,
   List,
 } from 'antd';
+import { isPast } from 'date-fns';
 import { useRouter } from 'next/router';
 
 import fetcher from '../../lib/fetcher';
 import PlaylistItem from '../../components/playlist-item';
 import withSession from '../../lib/session';
+import constants from '../../constants';
 
 const Rooms = ({ playlists }) => {
   const router = useRouter();
@@ -42,7 +44,7 @@ const Rooms = ({ playlists }) => {
 
 export const getServerSideProps = withSession(async ({ req }) => {
   const user = req.session.get('user');
-  if (!user) {
+  if (!user || isPast(new Date(user?.expiresIn))) {
     return {
       redirect: {
         destination: '/',
@@ -51,7 +53,7 @@ export const getServerSideProps = withSession(async ({ req }) => {
     };
   }
 
-  const response = await fetcher(`http://localhost:3000/api/playlists?accessToken=${user.accessToken || ''}`);
+  const response = await fetcher(`${constants.BASE_URL}/api/playlists?accessToken=${user.accessToken || ''}`);
 
   return {
     props: {

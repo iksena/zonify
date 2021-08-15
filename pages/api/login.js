@@ -35,7 +35,7 @@ const handler = async (req, res) => {
     expiresIn: add(new Date(), { seconds: response.body.expires_in }).toISOString(),
   };
 
-  return res.status(200).json({ ...user });
+  return res.status(200).json({ user });
 };
 
 export default handler;
