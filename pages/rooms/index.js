@@ -4,29 +4,13 @@ import {
   List,
 } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 
-import { getTokens } from '../../lib/auth';
 import fetcher from '../../lib/fetcher';
 import PlaylistItem from '../../components/playlist-item';
+import withSession from '../../lib/session';
 
-const Rooms = () => {
+const Rooms = ({ playlists }) => {
   const router = useRouter();
-  const [playlists, setPlaylists] = useState([]);
-
-  useEffect(() => {
-    const { isExpired, accessToken } = getTokens(window);
-    if (isExpired) {
-      router.push('/');
-    }
-
-    const fetchPlaylist = async () => {
-      const response = await fetcher(`http://localhost:3000/api/playlists?accessToken=${accessToken || ''}`);
-
-      setPlaylists(response.body.items);
-    };
-    fetchPlaylist();
-  }, [router]);
 
   return (
     <Row>
@@ -55,5 +39,25 @@ const Rooms = () => {
     </Row>
   );
 };
+
+export const getServerSideProps = withSession(async ({ req }) => {
+  const user = req.session.get('user');
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const response = await fetcher(`http://localhost:3000/api/playlists?accessToken=${user.accessToken || ''}`);
+
+  return {
+    props: {
+      playlists: response?.body?.items,
+    },
+  };
+});
 
 export default Rooms;

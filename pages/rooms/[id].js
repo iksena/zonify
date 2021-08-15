@@ -3,51 +3,50 @@ import {
   Col,
   List,
 } from 'antd';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
 
-import { getTokens } from '../../lib/auth';
 import fetcher from '../../lib/fetcher';
+import withSession from '../../lib/session';
 
-const Rooms = () => {
-  const router = useRouter();
-  const [tracks, setTracks] = useState([]);
+const Rooms = ({ tracks }) => (
+  <Row>
+    <Col span={24}>
+      <List
+        itemLayout="horizontal"
+        dataSource={tracks}
+        renderItem={({ track }) => (
+          <List.Item>
+            <List.Item.Meta
+              title={track.name}
+              description={track.artists?.reduce(
+                (artist, { name }, index, { length }) => artist.concat(name, index < length - 1 ? ', ' : ''),
+                '',
+              )}
+            />
+          </List.Item>
+        )}
+      />
+    </Col>
+  </Row>
+);
 
-  useEffect(() => {
-    const { isExpired, accessToken } = getTokens(window);
-    if (isExpired) {
-      router.push('/');
-    }
-
-    const fetchPlaylist = async () => {
-      const response = await fetcher(`http://localhost:3000/api/playlists/${router.query.id}?accessToken=${accessToken || ''}`);
-
-      setTracks(response?.body?.tracks?.items ?? []);
+export const getServerSideProps = withSession(async ({ req, query }) => {
+  const user = req.session.get('user');
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
     };
-    fetchPlaylist();
-  }, [router]);
+  }
 
-  return (
-    <Row>
-      <Col span={24}>
-        <List
-          itemLayout="horizontal"
-          dataSource={tracks}
-          renderItem={({ track }) => (
-            <List.Item>
-              <List.Item.Meta
-                title={track.name}
-                description={track.artists?.reduce(
-                  (artist, { name }, index, { length }) => artist.concat(name, index < length - 1 ? ', ' : ''),
-                  '',
-                )}
-              />
-            </List.Item>
-          )}
-        />
-      </Col>
-    </Row>
-  );
-};
+  const response = await fetcher(`http://localhost:3000/api/playlists/${query.id}?accessToken=${user.accessToken || ''}`);
+
+  return {
+    props: {
+      tracks: response?.body?.tracks?.items ?? [],
+    },
+  };
+});
 
 export default Rooms;

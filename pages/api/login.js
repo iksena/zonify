@@ -1,6 +1,8 @@
+import { add } from 'date-fns';
+
 import initiateSpotify from '../../lib/spotify';
 
-export default async function handler(req, res) {
+const handler = async (req, res) => {
   const { code } = req.query;
   const spotify = initiateSpotify();
 
@@ -26,6 +28,14 @@ export default async function handler(req, res) {
   }
 
   const response = await spotify.authorizationCodeGrant(code);
+  const user = {
+    isLoggedIn: true,
+    accessToken: response.body.access_token,
+    refreshToken: response.body.refresh_token,
+    expiresIn: add(new Date(), { seconds: response.body.expires_in }).toISOString(),
+  };
 
-  return res.status(200).json(response.body);
-}
+  return res.status(200).json({ ...user });
+};
+
+export default handler;
