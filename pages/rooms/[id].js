@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import { isPast } from 'date-fns';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 
 import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
@@ -23,6 +24,7 @@ const _fetchPlaylistTracks = async (playlistUrl) => {
 
   const body = response?.body ?? {};
   const tracks = body.tracks ?? {};
+  console.log(tracks.items);
 
   return {
     name: body.name ?? '',
@@ -37,6 +39,7 @@ const _fetchPlaylistTracks = async (playlistUrl) => {
 };
 
 const Rooms = (props) => {
+  const router = useRouter();
   const [menu, setMenu] = useState(MENU.TRACKS);
   const [tracks, setTracks] = useState(props.tracks);
 
@@ -50,13 +53,19 @@ const Rooms = (props) => {
     const result = await fetcher(`${baseUrl}/api/search?query=${query}&accessToken=${accessToken || ''}`);
     const trackResult = result?.body?.tracks?.items ?? [];
 
-    setTracks(trackResult.map((item) => ({ track: item })));
+    setTracks(trackResult.map((item) => ({ track: item, fromSearch: true })));
   };
 
   const navigateMenu = ({ key }) => {
     setTracks([]);
     if (key === MENU.TRACKS) fetchPlaylist();
     setMenu(key);
+  };
+
+  const onAddTrack = (track) => async () => {
+    await fetcher(`${props.baseUrl}/api/playlists/${router.query.id}/add?track=${track}&accessToken=${props.accessToken || ''}`);
+
+    navigateMenu({ key: MENU.TRACKS });
   };
 
   return (
@@ -68,7 +77,7 @@ const Rooms = (props) => {
           <Menu.Item key={MENU.SEARCH}>Search</Menu.Item>
         </Menu>
         {menu === MENU.SEARCH && <Input.Search placeholder="Search a song" onSearch={fetchSearch(props)} enterButton />}
-        <TrackList tracks={tracks} />
+        <TrackList tracks={tracks} onAdd={onAddTrack} />
       </Col>
     </Row>
   );

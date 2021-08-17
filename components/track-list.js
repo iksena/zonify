@@ -1,11 +1,16 @@
-import { List } from 'antd';
+import { Button, List } from 'antd';
+import { AppstoreAddOutlined } from '@ant-design/icons';
 
-const TrackList = ({ tracks }) => (
+const TrackList = ({ tracks, onAdd }) => (
   <List
     itemLayout="horizontal"
     dataSource={tracks}
-    renderItem={({ track }) => (
-      <List.Item>
+    renderItem={({ track, fromSearch }) => (
+      <List.Item
+        actions={[
+          fromSearch && <Button key="Add" type="primary" shape="round" icon={<AppstoreAddOutlined />} onClick={onAdd(track.uri)} />,
+        ]}
+      >
         <List.Item.Meta
           title={track.name}
           description={track.artists?.reduce(

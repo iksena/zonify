@@ -15,8 +15,8 @@ const Rooms = ({ playlists }) => {
   const router = useRouter();
 
   return (
-    <Row>
-      <Col span={24}>
+    <Row justify="center">
+      <Col span={12}>
         <List
           grid={{
             gutter: 16,

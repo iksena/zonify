@@ -1,4 +1,4 @@
-import { Typography } from 'antd';
+import { Typography, Row, Col } from 'antd';
 import { isFuture } from 'date-fns';
 
 import fetcher from '../lib/fetcher';
@@ -7,7 +7,13 @@ import constants from '../constants';
 
 const { Link } = Typography;
 
-const Login = ({ spotifyAuthUrl }) => <Link href={spotifyAuthUrl}>Login with Spotify</Link>;
+const Login = ({ spotifyAuthUrl }) => (
+  <Row justify="center">
+    <Col span={12}>
+      <Link href={spotifyAuthUrl}>Login with Spotify</Link>
+    </Col>
+  </Row>
+);
 
 export const getServerSideProps = withSession(async ({ req, query }) => {
   const { code } = query;

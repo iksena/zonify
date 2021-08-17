@@ -1,4 +1,4 @@
-import initiateSpotify from '../../../lib/spotify';
+import initiateSpotify from '../../../../lib/spotify';
 
 export default async function handler(req, res) {
   const { accessToken, id } = req.query;
