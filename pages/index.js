@@ -15,6 +15,7 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
   const { spotifyAuthUrl = null, user: newUser = null } = await fetcher(url);
 
   if (newUser?.isLoggedIn) {
+    console.log(newUser);
     req.session.set('user', newUser);
     await req.session.save();
   }

@@ -21,3 +21,4 @@ rules:
     - ignoreDestructuring: true
   react/jsx-props-no-spreading: off
   '@next/next/no-img-element': warn
+  no-underscore-dangle: 0

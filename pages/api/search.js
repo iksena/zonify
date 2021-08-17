@@ -1,8 +1,9 @@
-import initiateSpotify from '../../../lib/spotify';
+import initiateSpotify from '../../lib/spotify';
 
 export default async function handler(req, res) {
   const {
     accessToken,
+    query,
     limit,
     offset,
   } = req.query;
@@ -11,7 +12,7 @@ export default async function handler(req, res) {
   if (accessToken) {
     spotify.setAccessToken(accessToken);
     try {
-      const response = await spotify.getUserPlaylists({ limit, offset });
+      const response = await spotify.searchTracks(query, { limit, offset, market: 'from_token' });
 
       return res.status(200).json(response);
     } catch (error) {
