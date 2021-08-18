@@ -70,7 +70,7 @@ const Rooms = (props) => {
 
   return (
     <Row justify="center">
-      <Col span={12}>
+      <Col span={24} md={12}>
         <Divider orientation="left">{props.name}</Divider>
         <Menu selectedKeys={[menu]} onClick={navigateMenu} mode="horizontal">
           <Menu.Item key={MENU.TRACKS}>Tracks</Menu.Item>

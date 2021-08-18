@@ -16,15 +16,15 @@ const Rooms = ({ playlists }) => {
 
   return (
     <Row justify="center">
-      <Col span={12}>
+      <Col span={24} md={12}>
         <List
           grid={{
             gutter: 16,
             xs: 1,
             sm: 2,
-            md: 4,
-            lg: 4,
-            xl: 6,
+            md: 2,
+            lg: 2,
+            xl: 2,
             xxl: 3,
           }}
           split

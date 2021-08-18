@@ -9,7 +9,7 @@ const { Link } = Typography;
 
 const Login = ({ spotifyAuthUrl }) => (
   <Row justify="center">
-    <Col span={12}>
+    <Col span={24} md={12}>
       <Link href={spotifyAuthUrl}>Login with Spotify</Link>
     </Col>
   </Row>
