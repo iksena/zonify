@@ -16,9 +16,7 @@ plugins:
 rules:
   react/destructuring-assignment: off
   react/jsx-filename-extension: off
-  camelcase: 
-    - 2
-    - ignoreDestructuring: true
+  camelcase: 0
   react/jsx-props-no-spreading: off
   '@next/next/no-img-element': warn
   no-underscore-dangle: 0

@@ -24,7 +24,6 @@ const _fetchPlaylistTracks = async (playlistUrl) => {
 
   const body = response?.body ?? {};
   const tracks = body.tracks ?? {};
-  console.log(tracks.items);
 
   return {
     name: body.name ?? '',
