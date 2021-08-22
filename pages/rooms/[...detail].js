@@ -1,9 +1,9 @@
 import {
   Row,
   Col,
-  Divider,
   Menu,
   Input,
+  Card,
 } from 'antd';
 import { isPast } from 'date-fns';
 import { useRouter } from 'next/router';
@@ -39,19 +39,20 @@ const Detail = ({
   return (
     <Row justify="center">
       <Col span={24} md={12}>
-        <Divider orientation="left">{name}</Divider>
-        <Menu selectedKeys={menu || MENU.TRACKS} mode="horizontal">
-          <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/${MENU.TRACKS}`} replace>Tracks</Link></Menu.Item>
-          <Menu.Item key={MENU.SEARCH}><Link href={`/rooms/${id}/${MENU.SEARCH}`} replace>Search</Link></Menu.Item>
-        </Menu>
-        {isSearchMenu && (
+        <Card title={name}>
+          <Menu selectedKeys={menu || MENU.TRACKS} mode="horizontal">
+            <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/${MENU.TRACKS}`} replace>Tracks</Link></Menu.Item>
+            <Menu.Item key={MENU.SEARCH}><Link href={`/rooms/${id}/${MENU.SEARCH}`} replace>Search</Link></Menu.Item>
+          </Menu>
+          {isSearchMenu && (
           <Input.Search
             placeholder="Search a song"
             onSearch={(q) => router.replace(`${baseLocation}/${MENU.SEARCH}/?q=${q}`)}
             enterButton
           />
-        )}
-        <TrackList tracks={tracks} {...isSearchMenu && { onAdd: onAddTrack }} />
+          )}
+          <TrackList tracks={tracks} {...isSearchMenu && { onAdd: onAddTrack }} />
+        </Card>
       </Col>
     </Row>
   );

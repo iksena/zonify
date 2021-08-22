@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Children, useEffect, useState } from 'react';
 
 import { isDOM } from '../lib/auth';
 
@@ -28,10 +28,11 @@ const TrackPreview = ({ url, children }) => {
 
   return (
     <div
+      style={{ cursor: 'pointer' }}
       onMouseEnter={() => setPlaying(true)}
       onMouseLeave={() => setPlaying(false)}
     >
-      {children}
+      {Children.only(children)}
     </div>
   );
 };

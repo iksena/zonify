@@ -4,6 +4,7 @@ import {
   List,
   Radio,
   Avatar,
+  Card,
 } from 'antd';
 import { isPast } from 'date-fns';
 import { useRouter } from 'next/router';
@@ -22,34 +23,42 @@ const Rooms = ({ tracks, artists }) => {
     <>
       <Row justify="center">
         <Col span={24}>
-          <Radio.Group defaultValue={router.query.term ?? '0'}>
-            <Radio.Button value="0"><Link href={goToTab(0)}>4 weeks</Link></Radio.Button>
-            <Radio.Button value="1"><Link href={goToTab(1)}>6 months</Link></Radio.Button>
-            <Radio.Button value="2"><Link href={goToTab(2)}>All time</Link></Radio.Button>
-          </Radio.Group>
+          <Card style={{ margin: 5 }}>
+            Select time range:
+            {' '}
+            <Radio.Group value={router.query.term ?? '0'}>
+              <Radio.Button value="0"><Link href={goToTab(0)} replace>4 weeks</Link></Radio.Button>
+              <Radio.Button value="1"><Link href={goToTab(1)} replace>6 months</Link></Radio.Button>
+              <Radio.Button value="2"><Link href={goToTab(2)} replace>All time</Link></Radio.Button>
+            </Radio.Group>
+          </Card>
         </Col>
       </Row>
       <Row justify="center">
         <Col span={24} md={12}>
-          <TrackList tracks={tracks.map((item) => ({ track: item }))} />
+          <Card style={{ margin: 5 }} title="Top Tracks">
+            <TrackList tracks={tracks.map((item) => ({ track: item }))} />
+          </Card>
         </Col>
-        <Col span={24} md={12}>
-          <List
-            itemLayout="horizontal"
-            dataSource={artists}
-            renderItem={({ name, genres, images }) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar src={images[0]?.url} />}
-                  title={name}
-                  description={genres.reduce(
-                    (genre, label, index, { length }) => genre.concat(label, index < length - 1 ? ', ' : ''),
-                    '',
-                  )}
-                />
-              </List.Item>
-            )}
-          />
+        <Col span={18} md={12}>
+          <Card style={{ margin: 5 }} title="Top Artists">
+            <List
+              itemLayout="horizontal"
+              dataSource={artists}
+              renderItem={({ name, genres, images }) => (
+                <List.Item>
+                  <List.Item.Meta
+                    avatar={<Avatar src={images[0]?.url} />}
+                    title={name}
+                    description={genres.reduce(
+                      (genre, label, index, { length }) => genre.concat(label, index < length - 1 ? ', ' : ''),
+                      '',
+                    )}
+                  />
+                </List.Item>
+              )}
+            />
+          </Card>
         </Col>
       </Row>
     </>

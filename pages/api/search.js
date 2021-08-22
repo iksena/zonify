@@ -12,7 +12,9 @@ export default async function handler(req, res) {
   if (accessToken) {
     spotify.setAccessToken(accessToken);
     try {
-      const response = await spotify.searchTracks(query, { limit, offset, market: 'from_token' });
+      const response = await spotify.searchTracks(query, {
+        limit, offset, market: 'from_token', include_external: true,
+      });
 
       return res.status(200).json(response);
     } catch (error) {
