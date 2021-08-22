@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import { isPast } from 'date-fns';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import fetcher from '../lib/fetcher';
 import withSession from '../lib/session';
@@ -15,15 +16,16 @@ import TrackList from '../components/track-list';
 
 const Rooms = ({ tracks, artists }) => {
   const router = useRouter();
+  const goToTab = (tab) => `/top?term=${tab}`;
 
   return (
     <>
       <Row justify="center">
         <Col span={24}>
-          <Radio.Group onChange={({ target: { value } }) => router.replace(`/top?term=${value}`)} defaultValue={router.query.term ?? '0'}>
-            <Radio.Button value="0">4 weeks</Radio.Button>
-            <Radio.Button value="1">6 months</Radio.Button>
-            <Radio.Button value="2">All time</Radio.Button>
+          <Radio.Group defaultValue={router.query.term ?? '0'}>
+            <Radio.Button value="0"><Link href={goToTab(0)}>4 weeks</Link></Radio.Button>
+            <Radio.Button value="1"><Link href={goToTab(1)}>6 months</Link></Radio.Button>
+            <Radio.Button value="2"><Link href={goToTab(2)}>All time</Link></Radio.Button>
           </Radio.Group>
         </Col>
       </Row>

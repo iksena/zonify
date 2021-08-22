@@ -27,14 +27,13 @@ const Detail = ({
 }) => {
   const router = useRouter();
   const { detail: [id, menu] } = router.query;
+  const isSearchMenu = menu === MENU.SEARCH;
   const baseLocation = `/rooms/${id}`;
-
-  const navigateMenu = ({ key }) => router.replace(`${baseLocation}/${key}`);
 
   const onAddTrack = (track) => async () => {
     await fetcher(`${baseUrl}/api/playlists/${id}/add?track=${track}&accessToken=${accessToken || ''}`);
 
-    navigateMenu({ key: MENU.TRACKS });
+    router.replace(`${baseLocation}/${MENU.TRACKS}`);
   };
 
   return (
@@ -42,17 +41,17 @@ const Detail = ({
       <Col span={24} md={12}>
         <Divider orientation="left">{name}</Divider>
         <Menu selectedKeys={menu || MENU.TRACKS} mode="horizontal">
-          <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/tracks`}>Tracks</Link></Menu.Item>
-          <Menu.Item key={MENU.SEARCH}><Link href={`/rooms/${id}/search`}>Search</Link></Menu.Item>
+          <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/${MENU.TRACKS}`} replace>Tracks</Link></Menu.Item>
+          <Menu.Item key={MENU.SEARCH}><Link href={`/rooms/${id}/${MENU.SEARCH}`} replace>Search</Link></Menu.Item>
         </Menu>
-        {menu === MENU.SEARCH && (
+        {isSearchMenu && (
           <Input.Search
             placeholder="Search a song"
-            onSearch={(q) => router.replace(`${baseLocation}/search/?q=${q}`)}
+            onSearch={(q) => router.replace(`${baseLocation}/${MENU.SEARCH}/?q=${q}`)}
             enterButton
           />
         )}
-        <TrackList tracks={tracks} onAdd={onAddTrack} />
+        <TrackList tracks={tracks} {...isSearchMenu && { onAdd: onAddTrack }} />
       </Col>
     </Row>
   );
@@ -77,7 +76,7 @@ const _mapTracksResponse = (response) => {
 const _mapSearchResponse = (response) => {
   const body = response?.body ?? {};
   const tracks = body.tracks ?? {};
-  const searchResult = tracks.items?.map((item) => ({ track: item, fromSearch: true })) ?? [];
+  const searchResult = tracks.items?.map((item) => ({ track: item })) ?? [];
 
   return {
     tracks: searchResult,
