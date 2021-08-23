@@ -31,6 +31,8 @@ const TrackPreview = ({ url, children }) => {
       style={{ cursor: 'pointer' }}
       onMouseEnter={() => setPlaying(true)}
       onMouseLeave={() => setPlaying(false)}
+      onTouchStart={() => setPlaying(true)}
+      onTouchEnd={() => setPlaying(false)}
     >
       {Children.only(children)}
     </div>

@@ -65,12 +65,12 @@ const Rooms = ({ tracks, artists }) => {
   );
 };
 
-export const getServerSideProps = withSession(async ({ req, query }) => {
+export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }) => {
   const user = req.session.get('user');
   if (!user || isPast(new Date(user?.expiresIn))) {
     return {
       redirect: {
-        destination: '/',
+        destination: `/?state=${resolvedUrl}`,
         permanent: false,
       },
     };

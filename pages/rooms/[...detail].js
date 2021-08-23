@@ -87,13 +87,13 @@ const _mapSearchResponse = (response) => {
   };
 };
 
-export const getServerSideProps = withSession(async ({ req, query }) => {
+export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }) => {
   const { detail: [id, path], q } = query;
   const user = req.session.get('user');
   if (!user || isPast(new Date(user?.expiresIn))) {
     return {
       redirect: {
-        destination: '/',
+        destination: `/?state=${resolvedUrl}`,
         permanent: false,
       },
     };

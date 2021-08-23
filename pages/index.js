@@ -16,9 +16,9 @@ const Login = ({ spotifyAuthUrl }) => (
 );
 
 export const getServerSideProps = withSession(async ({ req, query }) => {
-  const { code } = query;
-  const url = `${constants.BASE_URL}/api/login?code=${code || ''}`;
-  const { spotifyAuthUrl = null, user: newUser = null } = await fetcher(url);
+  const { code, state } = query;
+  const url = `${constants.BASE_URL}/api/login?code=${code || ''}&state=${state || ''}`;
+  const { spotifyAuthUrl = null, user: newUser = null, path = '/rooms' } = await fetcher(url);
 
   if (newUser?.isLoggedIn) {
     console.log(newUser);
@@ -30,7 +30,7 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
   if (user && isFuture(new Date(user?.expiresIn))) {
     return {
       redirect: {
-        destination: '/rooms',
+        destination: `${constants.BASE_URL}${path}`,
         permanent: false,
       },
     };

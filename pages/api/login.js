@@ -3,7 +3,7 @@ import { add } from 'date-fns';
 import initiateSpotify from '../../lib/spotify';
 
 const handler = async (req, res) => {
-  const { code } = req.query;
+  const { code, state } = req.query;
   const spotify = initiateSpotify();
 
   if (!code) {
@@ -22,7 +22,7 @@ const handler = async (req, res) => {
       'user-library-read',
       'playlist-read-collaborative',
       'streaming',
-    ]);
+    ], state && encodeURI(state));
 
     return res.status(200).json({ spotifyAuthUrl });
   }
@@ -35,7 +35,7 @@ const handler = async (req, res) => {
     expiresIn: add(new Date(), { seconds: response.body.expires_in }).toISOString(),
   };
 
-  return res.status(200).json({ user });
+  return res.status(200).json({ user, ...state && { path: decodeURI(state) } });
 };
 
 export default handler;
