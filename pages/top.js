@@ -45,17 +45,21 @@ const Rooms = ({ tracks, artists }) => {
             <List
               itemLayout="horizontal"
               dataSource={artists}
-              renderItem={({ name, genres, images }) => (
-                <List.Item>
-                  <List.Item.Meta
-                    avatar={<Avatar src={images[0]?.url} />}
-                    title={name}
-                    description={genres.reduce(
-                      (genre, label, index, { length }) => genre.concat(label, index < length - 1 ? ', ' : ''),
-                      '',
-                    )}
-                  />
-                </List.Item>
+              renderItem={({
+                name, genres, images, id,
+              }) => (
+                <Link href={`/artists/${id}`} passHref>
+                  <List.Item>
+                    <List.Item.Meta
+                      avatar={<Avatar src={images[0]?.url} />}
+                      title={name}
+                      description={genres.reduce(
+                        (genre, label, index, { length }) => genre.concat(label, index < length - 1 ? ', ' : ''),
+                        '',
+                      )}
+                    />
+                  </List.Item>
+                </Link>
               )}
             />
           </Card>
