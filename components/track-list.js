@@ -1,5 +1,6 @@
 import { Button, List } from 'antd';
 import { AppstoreAddOutlined } from '@ant-design/icons';
+import Link from 'next/link';
 
 import TrackPreview from './track-preview';
 
@@ -8,7 +9,7 @@ const TrackList = ({ tracks, onAdd }) => (
     itemLayout="horizontal"
     dataSource={tracks}
     renderItem={({ track }) => (
-      <TrackPreview url={track.preview_url}>
+      <TrackPreview url={track.preview_url} key={track.id}>
         <List.Item
           actions={[
             onAdd && <Button key="Add" type="primary" shape="round" icon={<AppstoreAddOutlined />} onClick={onAdd?.(track.uri)} />,
@@ -16,10 +17,12 @@ const TrackList = ({ tracks, onAdd }) => (
         >
           <List.Item.Meta
             title={track.name}
-            description={track.artists?.reduce(
-              (artist, { name }, index, { length }) => artist.concat(name, index < length - 1 ? ', ' : ''),
-              '',
-            )}
+            description={track.artists?.map(({ name, id }, index, { length }) => (
+              <span key={id}>
+                <Link href={`/artists/${id}`}>{name}</Link>
+                {index < length - 1 ? ', ' : ''}
+              </span>
+            ))}
           />
         </List.Item>
       </TrackPreview>
