@@ -7,10 +7,13 @@ import constants from '../constants';
 
 const { Link } = Typography;
 
+const followButtonIframe = '<iframe src="https://open.spotify.com/follow/1/?uri=spotify:user:pqu0x4kwjlnmj2di1t695cnlm?si=c4b04787c0b34021&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>';
+
 const Login = ({ spotifyAuthUrl }) => (
   <Row justify="center">
     <Col span={24} md={12}>
       <Link href={spotifyAuthUrl}>Login with Spotify</Link>
+      <div dangerouslySetInnerHTML={{ __html: followButtonIframe }} />
     </Col>
   </Row>
 );

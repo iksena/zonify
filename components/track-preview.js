@@ -20,7 +20,7 @@ const useAudio = (url) => {
 
     return () => {
       audio?.removeEventListener('ended', pause);
-      pause();
+      audio?.pause();
     };
   }, [audio]);
 
@@ -41,7 +41,7 @@ const TrackPreview = ({ url, children, autoplay = true }) => {
 
   return (
     <div
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'none', marginBottom: 5 }}
       {...autoplay && {
         onMouseEnter: play,
         onMouseLeave: pause,
