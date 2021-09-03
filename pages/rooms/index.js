@@ -10,6 +10,7 @@ import fetcher from '../../lib/fetcher';
 import PlaylistItem from '../../components/playlist-item';
 import withSession from '../../lib/session';
 import constants from '../../constants';
+import Header from '../../components/header';
 
 const Rooms = ({ playlists }) => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const Rooms = ({ playlists }) => {
   return (
     <Row justify="center">
       <Col span={24} md={12}>
+        <Header />
         <List
           grid={{
             gutter: 16,

@@ -13,6 +13,7 @@ import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
 import constants from '../../constants';
 import TrackList from '../../components/track-list';
+import Header from '../../components/header';
 
 const MENU = {
   TRACKS: 'tracks',
@@ -39,6 +40,7 @@ const Detail = ({
   return (
     <Row justify="center">
       <Col span={24} md={12}>
+        <Header />
         <Card title={name}>
           <Menu selectedKeys={menu || MENU.TRACKS} mode="horizontal">
             <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/${MENU.TRACKS}`} replace>Tracks</Link></Menu.Item>

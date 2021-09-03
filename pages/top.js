@@ -14,6 +14,7 @@ import fetcher from '../lib/fetcher';
 import withSession from '../lib/session';
 import constants from '../constants';
 import TrackList from '../components/track-list';
+import Header from '../components/header';
 
 const Rooms = ({ tracks, artists }) => {
   const router = useRouter();
@@ -23,6 +24,7 @@ const Rooms = ({ tracks, artists }) => {
     <>
       <Row justify="center">
         <Col span={24}>
+          <Header />
           <Card style={{ margin: 5 }}>
             Select time range:
             {' '}

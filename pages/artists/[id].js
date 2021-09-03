@@ -9,10 +9,12 @@ import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
 import constants from '../../constants';
 import TrackList from '../../components/track-list';
+import Header from '../../components/header';
 
 const Rooms = ({ tracks }) => (
   <Row justify="center">
     <Col span={24} md={12}>
+      <Header />
       <Card style={{ margin: 5 }} title="Top Tracks">
         <TrackList tracks={tracks.map((item) => ({ track: item }))} />
       </Card>
