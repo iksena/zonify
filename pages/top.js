@@ -16,7 +16,7 @@ import constants from '../constants';
 import TrackList from '../components/track-list';
 import Header from '../components/header';
 
-const Rooms = ({ tracks, artists }) => {
+const Top = ({ tracks, artists }) => {
   const router = useRouter();
   const goToTab = (tab) => `/top?term=${tab}`;
 
@@ -94,4 +94,4 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
   };
 });
 
-export default Rooms;
+export default Top;

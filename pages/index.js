@@ -1,4 +1,6 @@
-import { Row, Col } from 'antd';
+import {
+  Row, Col, Typography, Button,
+} from 'antd';
 import { isFuture } from 'date-fns';
 import Link from 'next/link';
 
@@ -7,16 +9,24 @@ import withSession from '../lib/session';
 import constants from '../constants';
 import Header from '../components/header';
 
-const followButtonIframe = '<iframe src="https://open.spotify.com/follow/1/?uri=spotify:user:pqu0x4kwjlnmj2di1t695cnlm?si=c4b04787c0b34021&size=detail&theme=light" width="300" height="56" scrolling="no" frameborder="0" style="border:none; overflow:hidden;" allowtransparency="true"></iframe>';
+const { Text } = Typography;
 
 const Login = ({ spotifyAuthUrl }) => (
-  <Row justify="center">
-    <Col span={24} md={12}>
-      <Header />
-      <Link href={spotifyAuthUrl}>Login with Spotify</Link>
-      <div dangerouslySetInnerHTML={{ __html: followButtonIframe }} />
-    </Col>
-  </Row>
+  <>
+    <Row justify="center">
+      <Col span={24} md={12}>
+        <Header />
+      </Col>
+    </Row>
+    <Row justify="center" style={{ marginTop: 25 }}>
+      <Link href={spotifyAuthUrl} passHref>
+        <Button shape="round" style={{ fontSize: 18, color: '#1DB954' }}>Login with Spotify</Button>
+      </Link>
+    </Row>
+    <Row justify="center">
+      {!spotifyAuthUrl && <Text>Redirecting...</Text>}
+    </Row>
+  </>
 );
 
 export const getServerSideProps = withSession(async ({ req, query }) => {
