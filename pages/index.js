@@ -32,7 +32,7 @@ const Login = ({ spotifyAuthUrl }) => (
 export const getServerSideProps = withSession(async ({ req, query }) => {
   const { code, state } = query;
   const url = `${constants.BASE_URL}/api/login?code=${code || ''}&state=${state || ''}`;
-  const { spotifyAuthUrl = null, user: newUser = null, path = '/rooms' } = await fetcher(url);
+  const { spotifyAuthUrl = null, user: newUser = null, path = '/home' } = await fetcher(url);
 
   if (newUser?.isLoggedIn) {
     console.log(newUser);

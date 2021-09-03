@@ -15,7 +15,7 @@ const Header = () => {
   return (
     <Card>
       <Row justify="space-between" align="middle">
-        {pathname !== '/' && <ArrowLeftOutlined onClick={back} style={{ fontSize: 24 }} />}
+        {!['/', '/home'].includes(pathname) && <ArrowLeftOutlined onClick={back} style={{ fontSize: 24 }} />}
         <Title>Zonify</Title>
         <Link href="/logout" passHref><LogoutOutlined style={{ fontSize: 24 }} /></Link>
       </Row>
