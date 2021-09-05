@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 
 const { Title } = Typography;
 
-const Header = () => {
+const Header = ({ isLoggedIn }) => {
   const { back, pathname } = useRouter();
 
   return (
@@ -17,7 +17,7 @@ const Header = () => {
       <Row justify="space-between" align="middle">
         {!['/', '/home'].includes(pathname) && <ArrowLeftOutlined onClick={back} style={{ fontSize: 24 }} />}
         <Title>Zonify</Title>
-        <Link href="/logout" passHref><LogoutOutlined style={{ fontSize: 24 }} /></Link>
+        {isLoggedIn && <Link href="/logout" passHref><LogoutOutlined style={{ fontSize: 24 }} /></Link>}
       </Row>
     </Card>
   );

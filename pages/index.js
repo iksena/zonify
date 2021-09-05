@@ -11,11 +11,11 @@ import Header from '../components/header';
 
 const { Text } = Typography;
 
-const Login = ({ spotifyAuthUrl }) => (
+const Login = ({ spotifyAuthUrl, isLoggedIn }) => (
   <>
     <Row justify="center">
       <Col span={24} md={12}>
-        <Header />
+        <Header isLoggedIn={isLoggedIn} />
       </Col>
     </Row>
     <Row justify="center" style={{ marginTop: 25 }}>
@@ -41,7 +41,8 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
   }
 
   const user = req.session.get('user');
-  if (user && isFuture(new Date(user?.expiresIn))) {
+  const isLoggedIn = user && isFuture(new Date(user?.expiresIn));
+  if (isLoggedIn) {
     return {
       redirect: {
         destination: `${constants.BASE_URL}${path}`,
@@ -53,6 +54,7 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
   return {
     props: {
       spotifyAuthUrl,
+      isLoggedIn,
     },
   };
 });
