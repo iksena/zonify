@@ -3,7 +3,7 @@ import {
   Col,
   List,
 } from 'antd';
-import { isPast } from 'date-fns';
+import { isFuture } from 'date-fns';
 import { useRouter } from 'next/router';
 
 import fetcher from '../../lib/fetcher';
@@ -12,13 +12,13 @@ import withSession from '../../lib/session';
 import constants from '../../constants';
 import Header from '../../components/header';
 
-const Rooms = ({ playlists }) => {
+const Rooms = ({ playlists, isLoggedIn }) => {
   const router = useRouter();
 
   return (
     <Row justify="center">
       <Col span={24} md={12}>
-        <Header />
+        <Header isLoggedIn={isLoggedIn} />
         <List
           grid={{
             gutter: 16,
@@ -46,7 +46,8 @@ const Rooms = ({ playlists }) => {
 
 export const getServerSideProps = withSession(async ({ req }) => {
   const user = req.session.get('user');
-  if (!user || isPast(new Date(user?.expiresIn))) {
+  const isLoggedIn = !!user && isFuture(new Date(user?.expiresIn));
+  if (!isLoggedIn) {
     return {
       redirect: {
         destination: '/',
@@ -60,6 +61,7 @@ export const getServerSideProps = withSession(async ({ req }) => {
   return {
     props: {
       playlists: response?.body?.items,
+      isLoggedIn,
     },
   };
 });

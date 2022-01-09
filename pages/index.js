@@ -41,7 +41,7 @@ export const getServerSideProps = withSession(async ({ req, query }) => {
   }
 
   const user = req.session.get('user');
-  const isLoggedIn = user && isFuture(new Date(user?.expiresIn));
+  const isLoggedIn = !!user && isFuture(new Date(user?.expiresIn));
   if (isLoggedIn) {
     return {
       redirect: {

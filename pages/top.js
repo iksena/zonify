@@ -6,7 +6,7 @@ import {
   Avatar,
   Card,
 } from 'antd';
-import { isPast } from 'date-fns';
+import { isFuture } from 'date-fns';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
@@ -16,7 +16,7 @@ import constants from '../constants';
 import TrackList from '../components/track-list';
 import Header from '../components/header';
 
-const Top = ({ tracks, artists }) => {
+const Top = ({ tracks, artists, isLoggedIn }) => {
   const router = useRouter();
   const goToTab = (tab) => `/top?term=${tab}`;
 
@@ -24,7 +24,7 @@ const Top = ({ tracks, artists }) => {
     <>
       <Row justify="center">
         <Col span={24}>
-          <Header />
+          <Header isLoggedIn={isLoggedIn} />
           <Card style={{ margin: 5 }}>
             Select time range:
             {' '}
@@ -73,7 +73,8 @@ const Top = ({ tracks, artists }) => {
 
 export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }) => {
   const user = req.session.get('user');
-  if (!user || isPast(new Date(user?.expiresIn))) {
+  const isLoggedIn = !!user && isFuture(new Date(user?.expiresIn));
+  if (!isLoggedIn) {
     return {
       redirect: {
         destination: `/?state=${resolvedUrl}`,
@@ -90,6 +91,7 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
     props: {
       tracks,
       artists,
+      isLoggedIn,
     },
   };
 });

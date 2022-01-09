@@ -5,7 +5,7 @@ import {
   Input,
   Card,
 } from 'antd';
-import { isPast } from 'date-fns';
+import { isFuture } from 'date-fns';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
@@ -25,6 +25,7 @@ const Detail = ({
   accessToken,
   name,
   tracks,
+  isLoggedIn,
 }) => {
   const router = useRouter();
   const { detail: [id, menu] } = router.query;
@@ -40,7 +41,7 @@ const Detail = ({
   return (
     <Row justify="center">
       <Col span={24} md={12}>
-        <Header />
+        <Header isLoggedIn={isLoggedIn} />
         <Card title={name}>
           <Menu selectedKeys={menu || MENU.TRACKS} mode="horizontal">
             <Menu.Item key={MENU.TRACKS}><Link href={`/rooms/${id}/${MENU.TRACKS}`} replace>Tracks</Link></Menu.Item>
@@ -92,7 +93,8 @@ const _mapSearchResponse = (response) => {
 export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }) => {
   const { detail: [id, path], q } = query;
   const user = req.session.get('user');
-  if (!user || isPast(new Date(user?.expiresIn))) {
+  const isLoggedIn = !!user && isFuture(new Date(user?.expiresIn));
+  if (!isLoggedIn) {
     return {
       redirect: {
         destination: `/?state=${resolvedUrl}`,
@@ -117,6 +119,7 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
         ...defaultProps,
         ..._mapTracksResponse(result),
         ..._mapSearchResponse(searchResult),
+        isLoggedIn,
       },
     };
   }

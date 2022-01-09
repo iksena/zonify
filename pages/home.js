@@ -1,5 +1,5 @@
 import { Row, Col, Card } from 'antd';
-import { isPast } from 'date-fns';
+import { isFuture } from 'date-fns';
 import Link from 'next/link';
 
 import Header from '../components/header';
@@ -9,10 +9,10 @@ const PageItem = ({ children, ...props }) => (
   <Card {...props} hoverable>{children}</Card>
 );
 
-const Home = () => (
+const Home = ({ isLoggedIn }) => (
   <Row justify="center">
     <Col span={24} md={12}>
-      <Header />
+      <Header isLoggedIn={isLoggedIn} />
       <Row justify="space-around" style={{ marginTop: 16 }}>
         <Link href="/rooms" passHref>
           <PageItem>My Rooms</PageItem>
@@ -27,7 +27,8 @@ const Home = () => (
 
 export const getServerSideProps = withSession(async ({ req, resolvedUrl }) => {
   const user = req.session.get('user');
-  if (!user || isPast(new Date(user?.expiresIn))) {
+  const isLoggedIn = !!user && isFuture(new Date(user?.expiresIn));
+  if (!isLoggedIn) {
     return {
       redirect: {
         destination: `/?state=${resolvedUrl}`,
@@ -36,7 +37,7 @@ export const getServerSideProps = withSession(async ({ req, resolvedUrl }) => {
     };
   }
 
-  return { props: {} };
+  return { props: { isLoggedIn } };
 });
 
 export default Home;
