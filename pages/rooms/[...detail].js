@@ -124,7 +124,13 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
     };
   }
 
-  return { props: { ...defaultProps, ..._mapTracksResponse(result) } };
+  return {
+    props: {
+      ...defaultProps,
+      ..._mapTracksResponse(result),
+      isLoggedIn,
+    },
+  };
 });
 
 export default Detail;
