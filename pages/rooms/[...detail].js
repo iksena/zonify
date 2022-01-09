@@ -5,14 +5,15 @@ import {
   Input,
   Card,
 } from 'antd';
+import { useCallback, useEffect } from 'react';
 import { isFuture } from 'date-fns';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
-import supabase from '../../lib/supabase';
-import constants from '../../constants';
+import supabase, { client } from '../../lib/supabase';
+import constants from '../../lib/constants';
 import TrackList from '../../components/track-list';
 import Header from '../../components/header';
 
@@ -27,17 +28,33 @@ const Detail = ({
   name,
   tracks,
   isLoggedIn,
+  isOwnPlaylist,
+  user,
 }) => {
   const router = useRouter();
   const { detail: [id, menu] } = router.query;
   const isSearchMenu = menu === MENU.SEARCH;
   const baseLocation = `/rooms/${id}`;
 
-  const onAddTrack = (track) => async () => {
+  const postTrack = useCallback(async (track) => {
     await fetcher(`${baseUrl}/api/playlists/${id}/add?track=${track}&accessToken=${accessToken || ''}`);
 
     router.replace(`${baseLocation}/${MENU.TRACKS}`);
-  };
+  }, [baseUrl, id, accessToken, baseLocation, router]);
+
+  const onAddTrack = useCallback((track) => () => (
+    isOwnPlaylist
+      ? postTrack(track)
+      : supabase.addTrackToRoom(id, track, user.id)),
+  [postTrack, id, user, isOwnPlaylist]);
+
+  useEffect(() => {
+    supabase.subscribeTrackInserts(id, (payload) => {
+      postTrack(payload.new?.track_uri);
+    });
+
+    return () => client.removeAllSubscriptions();
+  }, [id, postTrack]);
 
   return (
     <Row justify="center">
@@ -67,6 +84,7 @@ const _mapTracksResponse = (response) => {
   const tracks = body.tracks ?? {};
 
   return {
+    id: body.id ?? '',
     name: body.name ?? '',
     ownerId: body.owner?.id ?? '',
     collaborative: body.collaborative ?? false,
@@ -92,6 +110,19 @@ const _mapSearchResponse = (response) => {
   };
 };
 
+const _saveRoom = async ({ id, name, ownerId }) => {
+  const { error } = await supabase.findOneUser(ownerId);
+  console.error(error);
+
+  if (!error) {
+    await supabase.saveRoom({
+      id,
+      name,
+      userId: ownerId,
+    });
+  }
+};
+
 export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }) => {
   const { detail: [id, path], q } = query;
   const user = req.session.get('user');
@@ -113,11 +144,8 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
 
   const result = await fetcher(`${constants.BASE_URL}/api/playlists/${id}?accessToken=${accessToken || ''}`);
   const playlist = _mapTracksResponse(result);
-  await supabase.saveRoom({
-    id,
-    name: playlist.name,
-    userId: playlist.ownerId,
-  });
+  const isOwnPlaylist = playlist.ownerId === user.id;
+  await _saveRoom(playlist);
 
   if (path === MENU.SEARCH) {
     const searchResult = !!q && await fetcher(`${constants.BASE_URL}/api/search?query=${q}&accessToken=${accessToken || ''}`);
@@ -127,7 +155,9 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
         ...defaultProps,
         ...playlist,
         ..._mapSearchResponse(searchResult),
+        user,
         isLoggedIn,
+        isOwnPlaylist,
       },
     };
   }
@@ -136,7 +166,9 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
     props: {
       ...defaultProps,
       ...playlist,
+      user,
       isLoggedIn,
+      isOwnPlaylist,
     },
   };
 });

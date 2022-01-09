@@ -7,7 +7,7 @@ import { isFuture } from 'date-fns';
 
 import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
-import constants from '../../constants';
+import constants from '../../lib/constants';
 import TrackList from '../../components/track-list';
 import Header from '../../components/header';
 

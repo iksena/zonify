@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import fetcher from '../../lib/fetcher';
 import PlaylistItem from '../../components/playlist-item';
 import withSession from '../../lib/session';
-import constants from '../../constants';
+import constants from '../../lib/constants';
 import Header from '../../components/header';
 
 const Rooms = ({ playlists, isLoggedIn }) => {
