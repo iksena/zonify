@@ -11,6 +11,7 @@ import Link from 'next/link';
 
 import fetcher from '../../lib/fetcher';
 import withSession from '../../lib/session';
+import supabase from '../../lib/supabase';
 import constants from '../../constants';
 import TrackList from '../../components/track-list';
 import Header from '../../components/header';
@@ -67,6 +68,7 @@ const _mapTracksResponse = (response) => {
 
   return {
     name: body.name ?? '',
+    ownerId: body.owner?.id ?? '',
     collaborative: body.collaborative ?? false,
     public: body.public ?? false,
     image: body.images?.[0]?.url ?? '',
@@ -110,6 +112,12 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
   };
 
   const result = await fetcher(`${constants.BASE_URL}/api/playlists/${id}?accessToken=${accessToken || ''}`);
+  const playlist = _mapTracksResponse(result);
+  await supabase.saveRoom({
+    id,
+    name: playlist.name,
+    userId: playlist.ownerId,
+  });
 
   if (path === MENU.SEARCH) {
     const searchResult = !!q && await fetcher(`${constants.BASE_URL}/api/search?query=${q}&accessToken=${accessToken || ''}`);
@@ -117,7 +125,7 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
     return {
       props: {
         ...defaultProps,
-        ..._mapTracksResponse(result),
+        ...playlist,
         ..._mapSearchResponse(searchResult),
         isLoggedIn,
       },
@@ -127,7 +135,7 @@ export const getServerSideProps = withSession(async ({ req, query, resolvedUrl }
   return {
     props: {
       ...defaultProps,
-      ..._mapTracksResponse(result),
+      ...playlist,
       isLoggedIn,
     },
   };

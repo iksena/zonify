@@ -2,7 +2,6 @@ import { add } from 'date-fns';
 
 import initiateSpotify from '../../lib/spotify';
 import supabase from '../../lib/supabase';
-import { saveUser } from '../../utils';
 
 const _createSpotifyAuthUrl = ({ spotify, state }, res) => {
   const spotifyAuthUrl = spotify.createAuthorizeURL([
@@ -39,8 +38,9 @@ const _authorizeSpotify = async (spotify, code) => {
 const _saveAuthorizedUser = async (spotify, user) => {
   spotify.setAccessToken(user?.accessToken);
   const { body: profile } = await spotify.getMe();
-  const savedUser = await saveUser(supabase, profile);
-  console.log(savedUser);
+  const { data: [savedProfile] } = await supabase.saveUser(profile, user);
+
+  return savedProfile;
 };
 
 const handler = async (req, res) => {
@@ -52,9 +52,15 @@ const handler = async (req, res) => {
   }
 
   const user = await _authorizeSpotify(spotify, code);
-  await _saveAuthorizedUser(spotify, user);
+  const profile = await _saveAuthorizedUser(spotify, user);
 
-  return res.status(200).json({ user, ...state && { path: decodeURI(state) } });
+  return res.status(200).json({
+    user: {
+      ...profile,
+      ...user,
+    },
+    ...state && { path: decodeURI(state) },
+  });
 };
 
 export default handler;
