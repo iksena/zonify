@@ -1,6 +1,6 @@
 import { Children, useEffect, useState } from 'react';
 
-import { isDOM } from '../lib/auth';
+export const isDOM = (window) => typeof window !== 'undefined';
 
 const useAudio = (url) => {
   const [audio, setAudio] = useState();

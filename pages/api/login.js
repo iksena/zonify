@@ -1,5 +1,4 @@
-import { add } from 'date-fns';
-
+import { mapAuthResponse } from '../../lib/auth';
 import initiateSpotify from '../../lib/spotify';
 import supabase from '../../lib/supabase';
 
@@ -24,17 +23,6 @@ const _createSpotifyAuthUrl = ({ spotify, state }, res) => {
   return res.status(200).json({ spotifyAuthUrl });
 };
 
-const _authorizeSpotify = async (spotify, code) => {
-  const response = await spotify.authorizationCodeGrant(code);
-
-  return {
-    isLoggedIn: true,
-    accessToken: response.body.access_token,
-    refreshToken: response.body.refresh_token,
-    expiresIn: add(new Date(), { seconds: response.body.expires_in }).toISOString(),
-  };
-};
-
 const _saveAuthorizedUser = async (spotify, user) => {
   spotify.setAccessToken(user?.accessToken);
   const { body: profile } = await spotify.getMe();
@@ -51,7 +39,8 @@ const handler = async (req, res) => {
     return _createSpotifyAuthUrl({ spotify, state }, res);
   }
 
-  const user = await _authorizeSpotify(spotify, code);
+  const authResponse = await spotify.authorizationCodeGrant(code);
+  const user = mapAuthResponse(authResponse);
   const profile = await _saveAuthorizedUser(spotify, user);
 
   return res.status(200).json({
