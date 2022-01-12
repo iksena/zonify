@@ -20,14 +20,14 @@ const BackButton = () => {
 const LogoutButton = ({ isLoggedIn }) => (
   isLoggedIn
     ? <Link href="/logout" passHref><LogoutOutlined style={{ fontSize: 24 }} /></Link>
-    : <div>{!isLoggedIn}</div>
+    : <div />
 );
 
 const Header = ({ isLoggedIn }) => (
   <Card>
     <Row justify="space-between" align="middle">
       <BackButton />
-      <Image src={logo} alt="logo" objectFit="contain" height="50" />
+      <Link href="/logout" passHref><Image src={logo} alt="logo" objectFit="contain" height="50" /></Link>
       <LogoutButton isLoggedIn={isLoggedIn} />
     </Row>
   </Card>
